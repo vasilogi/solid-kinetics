@@ -1,0 +1,6 @@
+conda create -n solidrPy python=3.8
+conda activate solidrPy
+conda config --env --add channels conda-forge
+conda install numpy
+conda install pandas
+# install spyder=5.0.1
