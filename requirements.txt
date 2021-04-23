@@ -3,4 +3,7 @@ conda activate solidrPy
 conda config --env --add channels conda-forge
 conda install numpy
 conda install pandas
+conda install -c anaconda scipy
+pip install -U scikit-learn
+conda install -c conda-forge matplotlib
 # install spyder=5.0.1
