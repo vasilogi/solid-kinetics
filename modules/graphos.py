@@ -8,7 +8,7 @@ import numpy as np
 
 # Local application imports
 from modules.arrhenius import mass2conv
-from modules.file_handlers import read_filtrated_datafile, read_units
+from modules.file_handlers import read_filtrated_datafile, read_units, get_data
 
 # basic plot settings
 graph_format = 'png'
@@ -16,14 +16,14 @@ graph_dpi    = 300
 font_size    = 13
 lwidth       = 3
 
-# concentration range
-low  = 0.0
-high = 1.0
-
 def graph_experimental_data(DATA_DIR,OUTPUT_DIR):
+
+    # concentration range
+    low  = 0.0
+    high = 1.0
     
     # get the csv data in a list
-    Csvs = [os.path.join(DATA_DIR,f) for f in os.listdir(DATA_DIR) if 'csv' in f]
+    Csvs = get_data(DATA_DIR)
 
     # create OUTPUT_DIR directory
     if not os.path.exists(OUTPUT_DIR):
@@ -44,6 +44,8 @@ def graph_experimental_data(DATA_DIR,OUTPUT_DIR):
     plt.xlim(0,)
     plt.ylim(0,1.0)
     plt.legend()
+    plt.ylabel('conversion')
+    plt.xlabel('time [' + timeUnits +']')
     plt.tight_layout()
     plt.savefig(Plot, format=graph_format, dpi=graph_dpi)
     plt.close() # to avoid memory warnings

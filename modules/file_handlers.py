@@ -1,5 +1,5 @@
 # Standard library imports
-import sys
+import os
 
 # Third party imports
 import pandas as pd
@@ -7,6 +7,11 @@ import numpy as np
 
 # Local application imports
 from .arrhenius import  mass2conv
+
+def get_data(DATA_DIR):
+    # get the csv data in a list
+    return [os.path.join(DATA_DIR,f) for f in os.listdir(DATA_DIR) if 'csv' in f]
+
 
 def read_filtrated_datafile(df,low,high):
     # df   : dataframe
