@@ -1,8 +1,17 @@
 # Standard library imports
 import os
 
+# Third party imports
+import pandas as pd
+
 # Local application imports
 from modules.graphos import graph_experimental_data
+from modules.file_handlers import read_filtrated_datafile, get_data
+from modules.regressors import comprehensiveRegressor
+from modules.euclidean_distance import convergenceData
+
+# models names supported in this software
+modelNames = ["A2","A3","A4","D1","D2","D3","D4","F0","F1","F2","F3","P2","P3","P4","R2","R3"]
 
 # DIRECTORIES
 MAIN_DIR  = os.getcwd()                     # current working directory
@@ -13,16 +22,17 @@ OUTPUT    = os.path.join(MAIN_DIR,'output') # output directory
 low  = 0.05
 high = 0.95
 
-for 
+# get data files
+Csvs = get_data(DATA)
 
-    # load the particular csv as chosen by the files-dropdown
-    case = filename
+# plot solely the experimental data
+graph_experimental_data(DATA,OUTPUT)
 
-    # read a data file
-    conversion, time, temperature = read_filtrated_datafile(case,low,high)
-
-    # perform non-linear regression and return the fitting information
-    df = comprehensiveRegressor(time, conversion, modelNames)
-
-    # calculate the convergence criterion
-    data = convergenceData(df)
+Csv = Csvs[0]
+df = pd.read_csv(Csv)
+# read data file
+conversion, time, temperature = read_filtrated_datafile(df,low,high)
+# perform non-linear regression and return the fitting information
+df = comprehensiveRegressor(time, conversion, modelNames)
+# calculate the convergence criterion
+data = convergenceData(df)

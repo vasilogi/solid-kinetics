@@ -1,11 +1,14 @@
+# Third party imports
 import numpy as np
 import pandas as pd
 from scipy.optimize import curve_fit
-from classes.reaction_rates import Model
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 from scipy.interpolate import interp1d
+
+# Local application imports
+from modules.reaction_models import Model
 
 def simpleLinearFit(time,k):
     return k*time
