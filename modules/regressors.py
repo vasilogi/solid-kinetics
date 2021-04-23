@@ -147,8 +147,6 @@ def differentialRateRegression(time,conversion,modelName,k_est):
     #     yfit = np.array([model.alpha(t, k) for t in time])  # simulated conversion fraction
     #     # calculate the mean square error on the conversion fraction
     #     mse  = MSE(y,yfit)
-    #     yfit = np.array( [k*model.f(a) for a in conversion] )
-    #     mse  = EER(conversion,time,yfit)
     # else:
     #     # measure the mean square error on the linear integral rate
     #     y    = np.array( [model.g(a) for a in conversion] ) # experimental integral rate
