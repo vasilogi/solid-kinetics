@@ -15,11 +15,17 @@ def simpleLinearFit(time,k):
     return k*time
 
 def rSquared(y,yfit):
-    # calculate the determination coefficient
+    # calculate the determination coefficient for linear fits (ideal = 1)
     residuals = y - yfit
     ss_res    = np.sum(residuals**2.0)
     ss_tot    = np.sum((y-np.mean(y))**2.0)
     return 1.0 - (ss_res / ss_tot)
+
+def MSE(y,yfit):
+    # calculate the mean square error (ideal = 0)
+    residuals = y - yfit
+    ss_res    = np.sum(residuals**2.0)
+    return (1.0/len(y))*ss_res
 
 def conversionRegression(time,conversion,model):
     # perform Non-Linear Regression
