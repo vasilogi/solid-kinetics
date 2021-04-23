@@ -37,6 +37,7 @@ for T in temperature:
 
     # determine an Arrhenius rate constant
     k         = rateConstant(frequency,enthalpy,T)
+    
     # calculate the start end end time for the sample data
     alpha     = np.linspace(0.05,0.95,100)
     startTime = model.g(alpha[0])/k
