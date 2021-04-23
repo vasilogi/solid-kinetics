@@ -27,39 +27,99 @@ def MSE(y,yfit):
     ss_res    = np.sum(residuals**2.0)
     return (1.0/len(y))*ss_res
 
-def conversionRegression(time,conversion,model):
-    # perform Non-Linear Regression
-    # fit the experimental conversion (conversion)
-    # calculate the Arrhenius rate constant (k)
+# def EER(y,yfit):
 
-    x          = time
-    y          = conversion
-    popt, pcov = curve_fit(model.alpha,x,y,p0=0.1)          # p0 : initial guess
-    # popt: optimal values for the parameters so that the sum of the squared residuals of f(xdata, *popt) - ydata is minimized.
-    k          = popt[0]                                    # Arrhenius rate constant
-    yfit       = np.array([model.alpha(t,k) for t in time]) # simulated conversion fraction
 
-    # calculate the determination coefficient
-    r_squared = rSquared(y,yfit)
-
-    return yfit, k, r_squared
-
-def integralRateRegression(time,conversion,model):
+def integralRateRegression(time,conversion,modelName):
     # perform Non-Linear Regression
     # fit the experimental integral rate conversion (g)
     # calculate the Arrhenius rate constant (k)
 
+    # pick up the model
+    model = Model(modelName)
+
+    # define data
     x          = time
     y          = np.array([model.g(a) for a in conversion])
+
+    # fit integral rate
     popt, pcov = curve_fit(simpleLinearFit,x,y,p0=0.1)          # p0 : initial guess
     # popt: optimal values for the parameters so that the sum of the squared residuals of f(xdata, *popt) - ydata is minimized.
     k          = popt[0]                                        # Arrhenius rate constant
     yfit       = np.array([simpleLinearFit(t,k) for t in time]) # simulated conversion fraction
 
-    # calculate the determination coefficient
-    r_squared = rSquared(y,yfit)
+    # calculate the mean square error
+    mse = MSE(y,yfit)
 
-    return yfit, k, r_squared
+    return k, mse
+
+def conversionRegression(time,conversion,modelName,k_est):
+    # perform Non-Linear Regression
+    # fit the experimental conversion (conversion)
+    # calculate the Arrhenius rate constant (k)
+
+    # pick up the model
+    model = Model(modelName)
+
+    # define data
+    x     = time
+    y     = conversion
+
+    if modelName not in ['D2','D4']:
+        # fit conversion
+        popt, pcov = curve_fit(model.alpha,x,y,p0=k_est)          # p0 : initial guess
+        # popt: optimal values for the parameters so that the sum of the squared residuals of f(xdata, *popt) - ydata is minimized.
+        k          = popt[0]                                      # Arrhenius rate constant
+        yfit       = np.array([model.alpha(t, k) for t in time])  # simulated conversion fraction
+        # calculate the mean square error on the conversion fraction
+        mse        = MSE(y,yfit)
+    else:
+        # measure the mean square error on the linear integral rate
+        k, mse = integralRateRegression(time,conversion,modelName)
+
+    return k, mse
+
+def differentialRateRegression(time,conversion,modelName,k_est):
+    # perform Non-Linear Regression
+    # fit the experimental differential rate conversion (f)
+    # calculate the Arrhenius rate constant (k)
+
+    # k_est: estimation for the Arrhenius constant
+
+    # ODE: da/dt = k f(a)
+    def RHS(t, k):
+        'Function that returns Ca computed from an ODE for a k'
+        def ODE(a, t):
+            return k * model.f(a)
+
+        u0          = conversion[0]
+        u_numerical = odeint(ODE, u0, t)
+        return u_numerical[:,0]
+
+    # pick up the model
+    model = Model(modelName)
+
+    # define data
+    x          = time
+    y          = conversion
+
+    # fit ODE
+    popt, pcov = curve_fit(RHS, x, y, p0=k_est)                    # p0 : initial guess
+    # popt: optimal values for the parameters so that the sum of the squared residuals of f(xdata, *popt) - ydata is minimized.
+    k          = popt[0]                                           # Arrhenius rate constant from fitting
+
+    if modelName not in ['D2','D4']:
+        yfit = np.array([model.alpha(t, k) for t in time])  # simulated conversion fraction
+        # calculate the mean square error on the conversion fraction
+        mse  = MSE(y,yfit)
+    else:
+        # measure the mean square error on the linear integral rate
+        y    = np.array( [model.g(a) for a in conversion] ) # experimental integral rate
+        yfit = np.array( [k*t for t in time] )              # simulated integral rate
+        # calculate the mean square error coefficient
+        mse  = MSE(y,yfit)
+
+    return k, mse
 
 def comprehensiveRegressor(time,conversion,models):
     # arguments
@@ -70,48 +130,42 @@ def comprehensiveRegressor(time,conversion,models):
     # returns
     # a dataframe containg the fitting information
 
-    rate_constant_alpha         = []
-    rate_constant_integral      = []
-    determination_coef_alpha    = []
-    determination_coef_integral = []
-    
+    rate_constant_alpha    = []
+    rate_constant_integral = []
+    rate_constant_differen = []
+    mse_coef_alpha         = []
+    mse_coef_integral      = []
+    mse_constant_differen  = []
+
     # loop over the models
     for modelIndx, modelName in enumerate(models):
 
-        # pick up the model
-        model = Model(modelName)
-
         # integral rate regression
-        yfit, k_integral, r_squared_integral = integralRateRegression(time, conversion, model)
-
-        # if the determination coefficient is negative then the fit is wrong by default
-        # and the particular model will be discarded
-        # however for a nonlogarithmim visualization of the euclidean distance we need values close to 0
-        if r_squared_integral < 0.0:
-            r_squared_integral = 0.0
+        k_integral, mse_integral = integralRateRegression(time, conversion, modelName)
 
         rate_constant_integral.append(k_integral)
-        determination_coef_integral.append(r_squared_integral)
+        mse_coef_integral.append(mse_integral)
 
         # conversion regression
-        if modelName not in ['D2','D4']:
-            yfit, k_alpha, r_squared_alpha = conversionRegression(time, conversion, model)
-        else:
-            r_squared_alpha = r_squared_integral
-            k_alpha         = k_integral
-
-        if r_squared_alpha < 0.0:
-            r_squared_alpha = 0.0
+        k_alpha, mse_alpha = conversionRegression(time, conversion, modelName, k_integral)
         
         rate_constant_alpha.append(abs(k_alpha)) # bug: RuntimeWarning: invalid value encountered in sqrt
-        determination_coef_alpha.append(r_squared_alpha)
+        mse_coef_alpha.append(mse_alpha)
+
+        # differential rate regression
+        k_differen, mse_differen = differentialRateRegression(time, conversion, modelName, k_integral)
+
+        rate_constant_differen.append(abs(k_differen)) # bug: RuntimeWarning: invalid value encountered in sqrt
+        mse_constant_differen.append(mse_differen)
     
     # pass the data to a dictionary
     data = {'model': models,
             'rate_constant - alpha': rate_constant_alpha,
             'rate_constant - integral': rate_constant_integral,
-            'R2 - alpha': determination_coef_alpha,
-            'R2 - integral': determination_coef_integral}
+            'rate_constant - differential': rate_constant_differen,
+            'MSE - alpha': mse_coef_alpha,
+            'MSE - integral': mse_coef_integral,
+            'MSE - differential': mse_constant_differen}
 
     # dictionary to dataframe
     df = pd.DataFrame(data)

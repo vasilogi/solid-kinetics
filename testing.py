@@ -39,7 +39,6 @@ def differentialRateRegression(time,conversion,model,k_est):
     # popt: optimal values for the parameters so that the sum of the squared residuals of f(xdata, *popt) - ydata is minimized.
     k          = popt[0]                                           # Arrhenius rate constant from fitting
 
-    # conversion regression
     if model not in ['D2','D4']:
         yfit = np.array([model.alpha(t, k) for t in time])  # simulated conversion fraction
         # calculate the mean square error on the conversion fraction
@@ -62,10 +61,10 @@ Csv  = Csvs[0]
 df   = pd.read_csv(Csv)
 conversion, time, temperature = read_filtrated_datafile(df,low,high)
 
-model = Model('A2')
+model  = Model('A2')
 k, mse = differentialRateRegression(time, conversion, model, 0.013 )
-tfit = np.linspace(time[0],time[-1])
-yfit = np.array([model.alpha(t, k) for t in tfit])
+tfit   = np.linspace(time[0],time[-1])
+yfit   = np.array([model.alpha(t, k) for t in tfit])
 
 plt.plot(time, conversion, 'ro', label='data')
 plt.plot(tfit, yfit, 'b-', label='fit')
