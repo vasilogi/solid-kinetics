@@ -44,5 +44,7 @@ def read_units(df):
 
     if tempUnits == 'Kelvin':
         tempUnits = 'K'
+    elif tempUnits == 'Celsius':
+        tempUnits = 'C'
         
     return timeUnits, massUnits, tempUnits

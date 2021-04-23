@@ -8,7 +8,7 @@ import numpy as np
 
 # Local application imports
 from modules.arrhenius import mass2conv
-from modules.file_handlers import read_filtrated_datafile
+from modules.file_handlers import read_filtrated_datafile, read_units
 
 # basic plot settings
 graph_format = 'png'
@@ -35,11 +35,15 @@ def graph_experimental_data(DATA_DIR,OUTPUT_DIR):
     
     for Csv in Csvs:
         df = pd.read_csv(Csv)
-        conversion, time, temperature = read_filtrated_datafile(df,low,high)
-        plt.scatter(time,conversion,s=10)
+        # read data file
+        conversion, time, temperature   = read_filtrated_datafile(df,low,high)
+        # read variable units
+        timeUnits, massUnits, tempUnits = read_units(df)
+        plt.scatter(time,conversion,s=10,label=str(temperature)+tempUnits)
     
     plt.xlim(0,)
     plt.ylim(0,1.0)
+    plt.legend()
     plt.tight_layout()
     plt.savefig(Plot, format=graph_format, dpi=graph_dpi)
     plt.close() # to avoid memory warnings
