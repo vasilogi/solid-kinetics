@@ -30,13 +30,17 @@ filenames = [f.split('.csv')[0] for f in os.listdir(DATA) if 'csv' in f]
 # plot solely the experimental data
 graph_experimental_data(DATA,OUTPUT)
 
-Csv = Csvs[0]
-df = pd.read_csv(Csv)
-# read data file
-conversion, time, temperature = read_filtrated_datafile(df,low,high)
-# perform non-linear regression and return the fitting information
-df = comprehensiveRegressor(time, conversion, modelNames)
-# save regression data
-df.to_csv(os.path.join(OUTPUT,filenames[0]+'_regression_data.csv'),index=False)
-# calculate the convergence criterion
-convergence_data = convergenceData(df)
+for indx, Csv in enumerate(Csvs):
+    # filename
+    fname = filenames[indx]
+    # read data
+    df = pd.read_csv(Csv)
+    conversion, time, temperature = read_filtrated_datafile(df,low,high)
+    # perform non-linear regression and return the fitting information
+    df = comprehensiveRegressor(time, conversion, modelNames)
+    # save regression data
+    df.to_csv(os.path.join(OUTPUT,fname+'_regression_data.csv'),index=False)
+    # calculate the convergence criterion
+    convergence_data = convergenceData(df)
+    # save convergence criteria data
+    convergence_data.to_csv(os.path.join(OUTPUT,fname+'_convergence_criteria_data.csv'),index=False)
