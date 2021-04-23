@@ -8,4 +8,3 @@ MAIN_DIR  = os.getcwd()                     # current working directory
 DATA      = os.path.join(MAIN_DIR,'data')   # data directory
 OUTPUT    = os.path.join(MAIN_DIR,'output') # output directory
 
-graph_experimental_data(DATA,OUTPUT)

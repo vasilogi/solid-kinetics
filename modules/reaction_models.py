@@ -93,7 +93,7 @@ class Model:
         
         return rate
     
-    def f(self,alpexp):
+    def f(self,a):
         
         """Return the differential reaction rate for each different model"""
         if (self.name == 'A2'):
