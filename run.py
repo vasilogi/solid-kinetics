@@ -10,6 +10,7 @@ from modules.file_handlers import read_filtrated_datafile, get_data
 from modules.regressors import comprehensiveRegressor
 from modules.euclidean_distance import convergenceData
 from modules.integral_regression import data2integralFit
+from modules.conversion_regression import data2conversionFit
 
 # models names supported in this software
 modelNames = ["A2","A3","A4","D1","D2","D3","D4","F0","F1","F2","F3","P2","P3","P4","R2","R3"]
@@ -32,3 +33,5 @@ graph_experimental_data(DATA,OUTPUT)
 # perform linear regression on the integral rate experimental data
 data2integralFit(DATA,OUTPUT,modelNames,low,high)
 
+# perform non-linear regression on the exact conversion
+data2conversionFit(DATA,OUTPUT,modelNames,low,high)

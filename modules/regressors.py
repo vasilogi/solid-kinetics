@@ -67,7 +67,7 @@ def integralRateRegression(time,conversion,modelName):
 
     return k, yfit
 
-def conversionRegression(time,conversion,modelName,k_est):
+def conversionRegression(time,conversion,modelName):
     # perform Non-Linear Regression
     # fit the experimental conversion (conversion)
     # calculate the Arrhenius rate constant (k)
@@ -80,18 +80,18 @@ def conversionRegression(time,conversion,modelName,k_est):
     y     = conversion
 
     if modelName not in ['D2','D4']:
+        # take estimation from the integral rate regression
+        k_est, yfit = integralRateRegression(x,y,modelName)
         # fit conversion
         popt, pcov = curve_fit(model.alpha,x,y,p0=k_est)          # p0 : initial guess
         # popt: optimal values for the parameters so that the sum of the squared residuals of f(xdata, *popt) - ydata is minimized.
         k          = popt[0]                                      # Arrhenius rate constant
-        yfit       = np.array([model.alpha(t, k) for t in time])  # simulated conversion fraction
-        # calculate the mean square error on the conversion fraction
-        mse        = MSE(y,yfit)
+        yfit       = np.array([model.alpha(t, k) for t in time])  # modeled conversion fraction
     else:
         # measure the mean square error on the linear integral rate
-        k, mse = integralRateRegression(time,conversion,modelName)
+        k, yfit = integralRateRegression(time,conversion,modelName)
 
-    return k, mse
+    return k, yfit
 
 def differentialRateRegression(time,conversion,modelName,k_est):
     # perform Non-Linear Regression
