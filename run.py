@@ -35,3 +35,5 @@ data2integralFit(DATA,OUTPUT,modelNames,low,high)
 
 # perform non-linear regression on the exact conversion
 data2conversionFit(DATA,OUTPUT,modelNames,low,high)
+
+# perform non-linear regression on the differential rate experimental data

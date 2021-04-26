@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from modules.reaction_models import Model
 from modules.arrhenius import rateConstant, conv2mass
 import random
+import matplotlib.pyplot as plt
 
 from scipy.optimize import curve_fit
 
@@ -28,3 +29,39 @@ from modules.integral_regression import data2integralFit
 
 data2integralFit(DATA,OUTPUT,modelNames,low,high)
 
+# Fit the conversion fraction with a polynomial
+# get data files
+Csvs = get_data(DATA)
+
+Csv = Csvs[0]
+
+# get dataframe
+df = pd.read_csv(Csv)
+# data
+conversion, time, temperature = read_filtrated_datafile(df,low,high)
+
+# fit
+# fit_degree = 9 # degree of the polynomial
+# z          = np.polyfit(time,conversion,fit_degree)
+# polynomial = np.poly1d(z) 
+t_polfit   = np.linspace(time[0],time[-1],1000) # interpolate to these new points
+# a_polfit   = polynomial(t_polfit)
+
+plt.scatter(time,conversion,s=10)
+# plt.plot(t_polfit, a_polfit)
+
+model = Model('A2')
+k = 0.0133114307850126
+
+
+# from scipy.misc import derivative
+
+# dadt = [derivative(polynomial,ti,dx=1e-6) for ti in t_polfit]
+
+# plt.scatter(t_polfit,dadt,s=10)
+
+yfit = np.array([model.alpha(t, k) for t in t_polfit])
+plt.plot(t_polfit, yfit)
+# f = np.array([model.f(c) for c in yfit])
+
+# plt.plot(t_polfit, f)

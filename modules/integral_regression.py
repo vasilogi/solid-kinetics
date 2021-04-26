@@ -26,7 +26,10 @@ def data2integralFit(DATA_DIR,OUTPUT_DIR,modelNames,low,high):
     # get csvs
     Csvs = get_data(DATA_DIR)
 
-    for Csv in Csvs:
+    # filnames
+    fnames = os.listdir(DATA_DIR)
+
+    for indx, Csv in enumerate(Csvs):
         # get dataframe
         df = pd.read_csv(Csv)
         # data
@@ -68,4 +71,5 @@ def data2integralFit(DATA_DIR,OUTPUT_DIR,modelNames,low,high):
             'k_arrhenius' : k_arrhenius
         }
         df = pd.DataFrame(error_data)
-        df.to_csv(os.path.join(DIR,'integral_regression_accuracy.csv'),index=False)
+        prefix = fnames[indx].split('.csv')[0]
+        df.to_csv(os.path.join(DIR,prefix + '_integral_regression_accuracy.csv'),index=False)
