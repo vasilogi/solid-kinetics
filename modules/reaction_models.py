@@ -135,7 +135,10 @@ class Model:
             else:
                 rate = -1.0/np.log(1.0-a)
         elif (self.name == 'D3'):
-            rate = (3.0*(1.0-a)**(2.0/3.0))/(2.0*(1.0-(1.0-a)**(1.0/3.0)))
+            if a <= 1.0:
+                rate = (3.0*(1.0-a)**(2.0/3.0))/(2.0*(1.0-(1.0-a)**(1.0/3.0)))
+            else: # bug: RuntimeWarning: invalid value encountered in double_scalars
+                rate = 0.0
         elif (self.name == 'D4'):
             rate = (3.0/2.0)*((1.0-a)**(-1.0/3.0)-1.0)**(-1.0)
         elif (self.name == 'F0'):
@@ -155,7 +158,10 @@ class Model:
         elif (self.name == 'R2'):
             rate = 2.0*((1.0-a)**(1.0/2.0))
         elif (self.name == 'R3'):
-            rate = 3.0*((1.0-a)**(2.0/3.0))
+            if a <= 1.0:
+                rate = 3.0*((1.0-a)**(2.0/3.0))
+            else: # bug: RuntimeWarning: invalid value encountered in double_scalars
+                rate = 0.0
         else:
             print('Wrong model choice')
             print('Instead, choose one from the models list: "A2-A4","D1-D4","F0-F3","P2-P4","R2-R3"')

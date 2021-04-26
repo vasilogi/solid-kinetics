@@ -2,15 +2,14 @@
 import os
 
 # Third party imports
-import pandas as pd
+# import pandas as pd
 
 # Local application imports
 from modules.graphos import graph_experimental_data
-from modules.file_handlers import read_filtrated_datafile, get_data
-from modules.regressors import comprehensiveRegressor
-from modules.euclidean_distance import convergenceData
+from modules.file_handlers import get_data
 from modules.integral_regression import data2integralFit
 from modules.conversion_regression import data2conversionFit
+from modules.differential_regression import  data2differentialFit
 
 # models names supported in this software
 modelNames = ["A2","A3","A4","D1","D2","D3","D4","F0","F1","F2","F3","P2","P3","P4","R2","R3"]
@@ -37,3 +36,4 @@ data2integralFit(DATA,OUTPUT,modelNames,low,high)
 data2conversionFit(DATA,OUTPUT,modelNames,low,high)
 
 # perform non-linear regression on the differential rate experimental data
+data2differentialFit(DATA,OUTPUT,modelNames,low,high)

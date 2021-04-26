@@ -93,7 +93,7 @@ def conversionRegression(time,conversion,modelName):
 
     return k, yfit
 
-def differentialRateRegression(time,conversion,modelName,k_est):
+def differentialRateRegression(time,conversion,modelName):
     # perform Non-Linear Regression
     # fit the experimental differential rate conversion (f)
     # calculate the Arrhenius rate constant (k)
@@ -117,29 +117,21 @@ def differentialRateRegression(time,conversion,modelName,k_est):
     x          = time
     y          = conversion
 
+    # take estimation from the integral rate regression
+    k_est, yfit = integralRateRegression(x,y,modelName)
     # fit ODE
     popt, pcov = curve_fit(RHS, x, y, p0=k_est)                    # p0 : initial guess
     # popt: optimal values for the parameters so that the sum of the squared residuals of f(xdata, *popt) - ydata is minimized.
     k          = popt[0]                                           # Arrhenius rate constant from fitting
 
-    # yfit = np.array([model.alpha(t, k) for t in time])  # simulated conversion fraction
-    # calculate the mean square error on the conversion fraction
-    
-    # yfit = np.array( [k*model.f(a) for a in conversion] )
-    # mse  = EER(conversion,time,yfit)
-
     if modelName not in ['D2','D4']:
-        yfit = np.array([model.alpha(t, k) for t in time])  # simulated conversion fraction
-        # calculate the mean square error on the conversion fraction
-        mse  = MSE(y,yfit)
+        yfit = np.array([model.alpha(t, k) for t in time])  # modeled conversion fraction
     else:
         # measure the mean square error on the linear integral rate
         y    = np.array( [model.g(a) for a in conversion] ) # experimental integral rate
-        yfit = np.array( [k*t for t in time] )              # simulated integral rate
-        # calculate the mean square error coefficient
-        mse  = MSE(y,yfit)
+        yfit = k*time                                       # modeled integral rate
 
-    return k, mse
+    return k, yfit
 
 def comprehensiveRegressor(time,conversion,models):
     # arguments
