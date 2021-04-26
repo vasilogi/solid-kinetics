@@ -24,6 +24,8 @@ def graph_experimental_data(DATA_DIR,OUTPUT_DIR):
     
     # get the csv data in a list
     Csvs = get_data(DATA_DIR)
+    # filnames
+    fnames = os.listdir(DATA_DIR)
 
     # create OUTPUT_DIR directory
     if not os.path.exists(OUTPUT_DIR):
@@ -33,13 +35,20 @@ def graph_experimental_data(DATA_DIR,OUTPUT_DIR):
     # export a graph for the fitting of the integral reaction rate
     Plot = os.path.join(OUTPUT_DIR,'experimental_conversion.'+graph_format)
     
-    for Csv in Csvs:
+    for indx, Csv in enumerate(Csvs):
         df = pd.read_csv(Csv)
         # read data file
         conversion, time, temperature   = read_filtrated_datafile(df,low,high)
         # read variable units
         timeUnits, massUnits, tempUnits = read_units(df)
         plt.scatter(time,conversion,s=10,label=str(temperature)+tempUnits)
+        # export experimental data
+        data = {
+            'time': time,
+            'conversion': conversion
+        }
+        df = pd.DataFrame(data)
+        df.to_csv(os.path.join(OUTPUT_DIR,fnames[indx]),index=False)
     
     plt.xlim(0,)
     plt.ylim(0,1.0)

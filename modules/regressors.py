@@ -10,22 +10,10 @@ from scipy.integrate import odeint
 
 # Local application imports
 from modules.reaction_models import Model
+from modules.gof import rSquared, MSE
 
 def simpleLinearFit(time,k):
     return k*time
-
-def rSquared(y,yfit):
-    # calculate the determination coefficient for linear fits (ideal = 1)
-    residuals = y - yfit
-    ss_res    = np.sum(residuals**2.0)
-    ss_tot    = np.sum((y-np.mean(y))**2.0)
-    return 1.0 - (ss_res / ss_tot)
-
-def MSE(y,yfit):
-    # calculate the mean square error (ideal = 0)
-    residuals = y - yfit
-    ss_res    = np.sum(residuals**2.0)
-    return (1.0/len(y))*ss_res
 
 def EER(conversion,time,yfit):
 
@@ -72,15 +60,12 @@ def integralRateRegression(time,conversion,modelName):
     y          = np.array([model.g(a) for a in conversion])
 
     # fit integral rate
-    popt, pcov = curve_fit(simpleLinearFit,x,y,p0=0.1)          # p0 : initial guess
+    popt, pcov = curve_fit(simpleLinearFit,x,y)
     # popt: optimal values for the parameters so that the sum of the squared residuals of f(xdata, *popt) - ydata is minimized.
-    k          = popt[0]                                        # Arrhenius rate constant
-    yfit       = np.array([simpleLinearFit(t,k) for t in time]) # simulated conversion fraction
+    k          = popt[0]                 # Arrhenius rate constant
+    yfit       = simpleLinearFit(time,k) # modeled integral reaction rate
 
-    # calculate the mean square error
-    mse = MSE(y,yfit)
-
-    return k, mse
+    return k, yfit
 
 def conversionRegression(time,conversion,modelName,k_est):
     # perform Non-Linear Regression
@@ -140,19 +125,19 @@ def differentialRateRegression(time,conversion,modelName,k_est):
     # yfit = np.array([model.alpha(t, k) for t in time])  # simulated conversion fraction
     # calculate the mean square error on the conversion fraction
     
-    yfit = np.array( [k*model.f(a) for a in conversion] )
-    mse  = EER(conversion,time,yfit)
+    # yfit = np.array( [k*model.f(a) for a in conversion] )
+    # mse  = EER(conversion,time,yfit)
 
-    # if modelName not in ['D2','D4']:
-    #     yfit = np.array([model.alpha(t, k) for t in time])  # simulated conversion fraction
-    #     # calculate the mean square error on the conversion fraction
-    #     mse  = MSE(y,yfit)
-    # else:
-    #     # measure the mean square error on the linear integral rate
-    #     y    = np.array( [model.g(a) for a in conversion] ) # experimental integral rate
-    #     yfit = np.array( [k*t for t in time] )              # simulated integral rate
-    #     # calculate the mean square error coefficient
-    #     mse  = MSE(y,yfit)
+    if modelName not in ['D2','D4']:
+        yfit = np.array([model.alpha(t, k) for t in time])  # simulated conversion fraction
+        # calculate the mean square error on the conversion fraction
+        mse  = MSE(y,yfit)
+    else:
+        # measure the mean square error on the linear integral rate
+        y    = np.array( [model.g(a) for a in conversion] ) # experimental integral rate
+        yfit = np.array( [k*t for t in time] )              # simulated integral rate
+        # calculate the mean square error coefficient
+        mse  = MSE(y,yfit)
 
     return k, mse
 

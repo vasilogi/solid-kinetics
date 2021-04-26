@@ -45,7 +45,8 @@ for T in temperature:
     time      = np.linspace(startTime,endTime,100)
 
     # calculate the conversion based on the chosen model
-    conversion = np.array([ model.alpha(t,k)+random.uniform(0.01, 0.04) for t in time])
+    # conversion = np.array([ model.alpha(t,k)+random.uniform(0.01, 0.03) for t in time])
+    conversion = np.array([ model.alpha(t,k) for t in time])
 
     # assume initial and final mass
     m0, minf = 10.0, 8.2
