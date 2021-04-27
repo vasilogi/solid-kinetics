@@ -34,10 +34,6 @@ def graph_experimental_data(DATA_DIR,OUTPUT_DIR):
     # filnames
     fnames = os.listdir(DATA_DIR)
 
-    # create DIR directory
-    if not os.path.exists(DIR):
-        os.makedirs(DIR)
-
     fig  = plt.figure()
     # export a graph for the fitting of the integral reaction rate
     Plot = os.path.join(DIR,'experimental_conversion.'+graph_format)
@@ -51,8 +47,9 @@ def graph_experimental_data(DATA_DIR,OUTPUT_DIR):
         plt.scatter(time,conversion,s=10,label=str(temperature)+tempUnits)
         # export experimental data
         data = {
-            'time': time,
-            'conversion': conversion
+            'time'        : time,
+            'conversion'  : conversion,
+            'temperature' : temperature
         }
         df = pd.DataFrame(data)
         df.to_csv(os.path.join(DIR,fnames[indx]),index=False)
