@@ -75,7 +75,8 @@ def data2conversionFit(DATA_DIR,OUTPUT_DIR,modelNames,low,high):
             'mse'         : mse,
             'resAEr'      : res_AEr,
             'resREr'      : res_REr,
-            'k_arrhenius' : k_arrhenius
+            'k_arrhenius' : k_arrhenius,
+            'temperature' : temperature
         }
         df = pd.DataFrame(error_data)
         prefix = fnames[indx].split('.csv')[0]

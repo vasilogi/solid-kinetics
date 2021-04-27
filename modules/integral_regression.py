@@ -68,7 +68,8 @@ def data2integralFit(DATA_DIR,OUTPUT_DIR,modelNames,low,high):
             'resAEr'      : res_AEr,
             'resREr'      : res_REr,
             'rSquared'    : r_Squared,
-            'k_arrhenius' : k_arrhenius
+            'k_arrhenius' : k_arrhenius,
+            'temperature' : temperature
         }
         df = pd.DataFrame(error_data)
         prefix = fnames[indx].split('.csv')[0]
