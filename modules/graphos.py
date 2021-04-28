@@ -2,6 +2,8 @@
 import os
 
 # Third party imports
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -32,7 +34,8 @@ def graph_experimental_data(DATA_DIR,OUTPUT_DIR):
     # get the csv data in a list
     Csvs = get_data(DATA_DIR)
     # filnames
-    fnames = os.listdir(DATA_DIR)
+    # filnames
+    fnames = [f.split('.csv')[0] for f in os.listdir(DATA_DIR)]
 
     fig  = plt.figure()
     # export a graph for the fitting of the integral reaction rate
@@ -52,7 +55,8 @@ def graph_experimental_data(DATA_DIR,OUTPUT_DIR):
             'temperature' : temperature
         }
         df = pd.DataFrame(data)
-        df.to_csv(os.path.join(DIR,fnames[indx]),index=False)
+        csv_name = fnames[indx] + '_experimental_conversion.csv'
+        df.to_csv(os.path.join(DIR,csv_name),index=False)
     
     plt.xlim(0,)
     plt.ylim(0,1.0)
@@ -93,8 +97,10 @@ def df2heatmap(WDIR,df,fname):
     # get only the numerical columns regarding accuracy measures
     criteria = df.columns.to_list()
     criteria.remove('model')
-    criteria.remove('k_arrhenius')
     criteria.remove('temperature')
+    if 'k_arrhenius' in criteria:
+        criteria.remove('k_arrhenius')
+    
 
     # get the models in a list
     models = df['model'].tolist()
