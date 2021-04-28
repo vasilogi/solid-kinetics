@@ -5,12 +5,11 @@ import os
 # import pandas as pd
 
 # Local application imports
-from modules.graphos import graph_experimental_data
+from modules.graphos import graph_experimental_data, measures2heatmaps, integralRegressionGraphs
 from modules.file_handlers import get_data
 from modules.integral_regression import data2integralFit
 from modules.conversion_regression import data2conversionFit, ratedata2Fit
 from modules.differential_regression import  data2differentialFit
-from modules.graphos import measures2heatmaps
 from modules.reaction_rate_numerics import export_experimental_reaction
 
 # models names supported in this software
@@ -55,3 +54,6 @@ ratedata2Fit(DATA,OUTPUT,modelNames,low,high,pdeg,npoints,False)
 
 # heatmap metrics
 measures2heatmaps(OUTPUT)
+
+# graph all fittings of the integral reaction rate
+integralRegressionGraphs(DATA,OUTPUT,low,high,npoints)

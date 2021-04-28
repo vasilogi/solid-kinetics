@@ -12,6 +12,7 @@ import numpy as np
 # Local application imports
 from modules.arrhenius import mass2conv
 from modules.file_handlers import read_filtrated_datafile, read_units, get_data
+from modules.reaction_models import Model
 
 # basic plot settings
 graph_format = 'png'
@@ -115,7 +116,7 @@ def df2heatmap(WDIR,df,fname):
         # parse it to dictionary
         ranking[measure] = rank
 
-    sns.set_theme()
+    # sns.set_theme()
     
     # create ranking dataframe
     rankDF = pd.DataFrame(ranking)
@@ -144,3 +145,79 @@ def measures2heatmaps(OUTPUT_DIR):
             df    = pd.read_csv(Csv)
             fname = fnames[indx]
             df2heatmap(WDIR, df, fname)
+
+def sortOnData(bnames,l):
+    # bnames : list of names on which data will be sorted
+    # l      : list to sort
+    # sl     : sorted list
+    sl = []
+    for bn in bnames:
+        for csv in l:
+            if bn in csv:
+                sl.append(csv)
+    return sl
+
+def integralRegressionGraphs(DATA_DIR,OUTPUT_DIR,low,high,npoints):
+
+    # get names (without format suffix) of the data csv files
+    # bnames : base names
+    bnames = [f.split('.csv')[0] for f in os.listdir(DATA_DIR)]
+    # paths of the experimental data csv files
+    data_Csvs = get_data(DATA_DIR)
+    # metrics directory
+    METRICS_DIR = os.path.join(OUTPUT_DIR, 'integral_regression')
+    # paths of the metrics from the integral regression
+    metrics_Csvs = get_data(METRICS_DIR)
+
+    # zip data files and metrics
+    data    = sortOnData(bnames,data_Csvs)
+    metrics = sortOnData(bnames,metrics_Csvs)
+    data_and_metrics = list(zip(data,metrics))
+    
+    # loop over all data
+    for i_csv, csv in enumerate(data_and_metrics):
+
+        # make directory for the graphs
+        DIR       = os.path.join(METRICS_DIR,'png')
+        GRAPH_DIR = os.path.join(DIR, bnames[i_csv])
+        if not os.path.exists(GRAPH_DIR):
+            os.makedirs(GRAPH_DIR)
+
+        # data dataframe
+        data_df    = pd.read_csv(csv[0])
+        # metrics dataframe
+        metrics_df = pd.read_csv(csv[1])
+        # data
+        conversion, time, temperature = read_filtrated_datafile(data_df,low,high)
+        # read variable units
+        timeUnits, massUnits, tempUnits = read_units(data_df)
+
+        modelNames = metrics_df['model'].tolist()
+        ks     = metrics_df['k_arrhenius'].to_numpy()
+
+        # loop over models
+        for i_model, modelName in enumerate(modelNames):
+            # pick up a model
+            model = Model(modelName)
+            # choose the corresponding arrhenius rate constant
+            k = ks[i_model]
+            # calculate experimental integral reaction rate
+            y = np.array( [ model.g(a) for a in conversion ] )
+            x = time
+            # fit
+            tfit = np.linspace(time[0], time[-1], num=npoints)
+            yfit = k*tfit
+            xfit = tfit
+
+            # export a graph for the fitting of the integral reaction rate
+            fig  = plt.figure()
+            fname = modelName + '_' + bnames[i_csv] + '_integral_regression.'+graph_format
+            Plot = os.path.join(GRAPH_DIR,fname)
+            plt.scatter(x, y, s=10, label='experimental')
+            plt.plot(xfit, yfit, lw=lwidth, label=r'kt')
+            plt.legend()
+            plt.ylabel(r'g (a)')
+            plt.xlabel('time [' + timeUnits +']')
+            plt.tight_layout()
+            plt.savefig(Plot, format=graph_format, dpi=graph_dpi)
+            plt.close() # to avoid memory warnings

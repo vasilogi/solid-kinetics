@@ -31,52 +31,186 @@ font_size    = 13
 lwidth       = 3
 
 # get conversion regression data
+def sortOnData(bnames,l):
+    # bnames : list of names on which data will be sorted
+    # l      : list to sort
+    # sl     : sorted list
+    sl = []
+    for bn in bnames:
+        for csv in l:
+            if bn in csv:
+                sl.append(csv)
+    return sl
 
-WDIR = os.path.join(OUTPUT, 'integral_regression')
-Csvs = get_data(WDIR)
-# filnames
-fnames = [f.split('.csv')[0] for f in os.listdir(WDIR) if 'csv' in f]
+def integralRegressionGraphs(DATA_DIR,OUTPUT_DIR,low,high,npoints):
 
-indx = 2
-Csv = Csvs[indx]
-df = pd.read_csv(Csv)
-fname = fnames[indx]
+    # get names (without format suffix) of the data csv files
+    # bnames : base names
+    bnames = [f.split('.csv')[0] for f in os.listdir(DATA_DIR)]
+    # paths of the experimental data csv files
+    data_Csvs = get_data(DATA_DIR)
+    # metrics directory
+    METRICS_DIR = os.path.join(OUTPUT_DIR, 'integral_regression')
+    # paths of the metrics from the integral regression
+    metrics_Csvs = get_data(METRICS_DIR)
+
+    # zip data files and metrics
+    data    = sortOnData(bnames,data_Csvs)
+    metrics = sortOnData(bnames,metrics_Csvs)
+    data_and_metrics = list(zip(data,metrics))
+    
+    # loop over all data
+    for i_csv, csv in enumerate(data_and_metrics):
+
+        # make directory for the graphs
+        DIR       = os.path.join(METRICS_DIR,'png')
+        GRAPH_DIR = os.path.join(DIR, bnames[i_csv])
+        if not os.path.exists(GRAPH_DIR):
+            os.makedirs(GRAPH_DIR)
+
+        # data dataframe
+        data_df    = pd.read_csv(csv[0])
+        # metrics dataframe
+        metrics_df = pd.read_csv(csv[1])
+        # data
+        conversion, time, temperature = read_filtrated_datafile(data_df,low,high)
+        # read variable units
+        timeUnits, massUnits, tempUnits = read_units(data_df)
+
+        modelNames = metrics_df['model'].tolist()
+        ks     = metrics_df['k_arrhenius'].to_numpy()
+
+        # loop over models
+        for i_model, modelName in enumerate(modelNames):
+            # pick up a model
+            model = Model(modelName)
+            # choose the corresponding arrhenius rate constant
+            k = ks[i_model]
+            # calculate experimental integral reaction rate
+            y = np.array( [ model.g(a) for a in conversion ] )
+            x = time
+            # fit
+            tfit = np.linspace(time[0], time[-1], num=npoints)
+            yfit = k*tfit
+            xfit = tfit
+
+            # export a graph for the fitting of the integral reaction rate
+            fig  = plt.figure()
+            fname = modelName + '_' + bnames[i_csv] + '_integral_regression.'+graph_format
+            Plot = os.path.join(GRAPH_DIR,fname)
+            plt.scatter(x, y, s=10, label='experimental')
+            plt.plot(xfit, yfit, lw=lwidth, label=r'kt')
+            plt.legend()
+            plt.ylabel(r'g (a)')
+            plt.xlabel('time [' + timeUnits +']')
+            plt.tight_layout()
+            plt.savefig(Plot, format=graph_format, dpi=graph_dpi)
+            plt.close() # to avoid memory warnings
 
 
-from modules.integral_regression import data2integralFit
-
-data2integralFit(DATA,OUTPUT,modelNames,low,high)
-
-# Fit the conversion fraction with a polynomial
-# get data files
-Csvs = get_data(DATA)
-
-Csv = Csvs[0]
-
-df = pd.read_csv(Csv)
-conversion, time, temperature = read_filtrated_datafile(df,low,high)
-
-model = Model(modelNames[7])
-k = 0.0133114307850126
 
 
-from modules.reaction_rate_numerics import data2Polrate, data2Exprate
-
-dadt = data2Polrate(Csv,low,high,9,1000)
-plt.scatter(time,dadt,s=10)
 
 
-# yfit = np.array([model.alpha(t, k) for t in t_polfit])
-# # plt.plot(t_polfit, yfit)
-frate = np.array([k*model.f(c) for c in conversion])
-dadt = data2Exprate(Csv,low,high)
-plt.scatter(time,dadt)
 
-plt.plot(time, frate)
 
-from modules.gof import resREr
 
-y = dadt
-yfit = frate
-s = resREr(y, yfit)
-print(s)
+npoints = 1000
+integralRegressionGraphs(DATA,OUTPUT,low,high,npoints)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# bnames = [f.split('.csv')[0] for f in os.listdir(DATA)]
+# data_Csvs = get_data(DATA)
+
+# WDIR = os.path.join(OUTPUT, 'integral_regression')
+# metrics_Csvs = get_data(WDIR)
+# # filnames
+# # fnames = [f.split('.csv')[0] for f in os.listdir(WDIR) if 'csv' in f]
+
+# # zip data files and metrics
+# data = []
+# for bn in bnames:
+#     for csv in data_Csvs:
+#         if bn in csv:
+#             data.append(csv)
+            
+# metrics = []
+# for bn in bnames:
+#     for csv in metrics_Csvs:
+#         if bn in csv:
+#             metrics.append(csv)
+
+# data_and_metrics = list(zip(data,metrics))
+            
+# # for csv in data_and_metrics:
+# csv = data_and_metrics[0]
+
+# data_df    = pd.read_csv(csv[0])
+# metrics_df = pd.read_csv(csv[1])
+
+# # data
+# conversion, time, temperature = read_filtrated_datafile(data_df,low,high)
+# # read variable units
+# timeUnits, massUnits, tempUnits = read_units(data_df)
+
+# modelNames = metrics_df['model'].tolist()
+# ks     = metrics_df['k_arrhenius'].to_numpy()
+
+# modelName = modelNames[0]
+# model = Model(modelName)
+# k = ks[0]
+
+# # data
+
+# y = np.array( [ model.g(a) for a in conversion ] )
+# x = time
+
+# # fit
+
+# npoints = 1000
+
+# tfit = np.linspace(time[0], time[-1], num=1000)
+# yfit = k*tfit
+# xfit = tfit
+
+# fig  = plt.figure()
+# # export a graph for the fitting of the integral reaction rate
+
+# DIR = os.path.join(WDIR, 'png')
+# DIR = os.path.join(DIR, bnames[0])
+# if not os.path.exists(DIR):
+#     os.makedirs(DIR)
+
+# fname = modelName + '_' + bnames[0] + '_integral_regression.'+graph_format
+# Plot = os.path.join(DIR,fname)
+# plt.scatter(x, y, s=10, label='experimental')
+# plt.plot(xfit, yfit, lw=lwidth, label=r'kt')
+# # plt.xlim(0,)
+# # plt.ylim(0,1.0)
+# plt.legend()
+# plt.ylabel(r'g (a)')
+# plt.xlabel('time [' + timeUnits +']')
+# plt.tight_layout()
+# plt.savefig(Plot, format=graph_format, dpi=graph_dpi)
+# # plt.close() # to avoid memory warnings
