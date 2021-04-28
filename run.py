@@ -5,7 +5,7 @@ import os
 # import pandas as pd
 
 # Local application imports
-from modules.graphos import graph_experimental_data, measures2heatmaps, integralRegressionGraphs
+from modules.graphos import graph_experimental_data, measures2heatmaps, integralRegressionGraphs, conversionRegressionGraphs
 from modules.file_handlers import get_data
 from modules.integral_regression import data2integralFit
 from modules.conversion_regression import data2conversionFit, ratedata2Fit
@@ -57,3 +57,6 @@ measures2heatmaps(OUTPUT)
 
 # graph all fittings of the integral reaction rate
 integralRegressionGraphs(DATA,OUTPUT,low,high,npoints)
+
+# graph all fittings of the conversion
+conversionRegressionGraphs(DATA,OUTPUT,low,high,npoints)
