@@ -11,6 +11,7 @@ from modules.integral_regression import data2integralFit
 from modules.conversion_regression import data2conversionFit, ratedata2Fit
 from modules.differential_regression import  data2differentialFit
 from modules.reaction_rate_numerics import export_experimental_reaction
+from modules.euclidean_distance import criteria2desicionIndex
 
 # models names supported in this software
 modelNames = ["A2","A3","A4","D1","D2","D3","D4","F0","F1","F2","F3","P2","P3","P4","R2","R3"]
@@ -69,3 +70,8 @@ rateFitGraphs(DATA,OUTPUT,low,high,pdeg,npoints,True)
 
 # graph all fittings of the actual reaction polynomial rate
 rateFitGraphs(DATA,OUTPUT,low,high,pdeg,npoints,False)
+
+# export csv with the desicions
+measure = 'resREr' # choose measure
+fitExp = False
+criteria2desicionIndex(DATA,OUTPUT,measure,fitExp)
