@@ -5,7 +5,7 @@ import os
 # import pandas as pd
 
 # Local application imports
-from modules.graphos import graph_experimental_data, measures2heatmaps, integralRegressionGraphs, conversionRegressionGraphs, differentialRegressionGraphs
+from modules.graphos import graph_experimental_data, measures2heatmaps, integralRegressionGraphs, conversionRegressionGraphs, differentialRegressionGraphs, rateFitGraphs
 from modules.file_handlers import get_data
 from modules.integral_regression import data2integralFit
 from modules.conversion_regression import data2conversionFit, ratedata2Fit
@@ -63,3 +63,9 @@ conversionRegressionGraphs(DATA,OUTPUT,low,high,npoints)
 
 # graph all fittings of the conversion from the differential rate fitting
 differentialRegressionGraphs(DATA,OUTPUT,low,high,npoints)
+
+# graph all fittings of the actual reaction experimental rate
+rateFitGraphs(DATA,OUTPUT,low,high,pdeg,npoints,True)
+
+# graph all fittings of the actual reaction polynomial rate
+rateFitGraphs(DATA,OUTPUT,low,high,pdeg,npoints,False)

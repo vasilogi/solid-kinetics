@@ -13,6 +13,7 @@ import numpy as np
 from modules.arrhenius import mass2conv
 from modules.file_handlers import read_filtrated_datafile, read_units, get_data
 from modules.reaction_models import Model
+from modules.reaction_rate_numerics import data2Polrate, data2Exprate
 
 # basic plot settings
 graph_format = 'png'
@@ -282,7 +283,7 @@ def conversionRegressionGraphs(DATA_DIR,OUTPUT_DIR,low,high,npoints):
                 fname = modelName + '_' + bnames[i_csv] + '_conversion_regression.'+graph_format
                 Plot = os.path.join(GRAPH_DIR,fname)
                 plt.scatter(x, y, s=10, label='experimental')
-                plt.plot(xfit, yfit, lw=lwidth, label=r'kt')
+                plt.plot(xfit, yfit, lw=lwidth, label=modelName)
                 plt.legend()
                 plt.ylabel(r'conversion')
                 plt.xlabel('time [' + timeUnits +']')
@@ -349,11 +350,96 @@ def differentialRegressionGraphs(DATA_DIR,OUTPUT_DIR,low,high,npoints):
                 fname = modelName + '_' + bnames[i_csv] + '_differential_regression.'+graph_format
                 Plot = os.path.join(GRAPH_DIR,fname)
                 plt.scatter(x, y, s=10, label='experimental')
-                plt.plot(xfit, yfit, lw=lwidth, label=r'kt')
+                plt.plot(xfit, yfit, lw=lwidth, label=modelName)
                 plt.legend()
                 plt.ylabel(r'conversion')
                 plt.xlabel('time [' + timeUnits +']')
                 plt.ylim(0.0, 1.0)
+                plt.tight_layout()
+                plt.savefig(Plot, format=graph_format, dpi=graph_dpi)
+                plt.close() # to avoid memory warnings
+
+def rateFitGraphs(DATA_DIR,OUTPUT_DIR,low,high,pdeg,npoints,fitExp):
+
+    # get names (without format suffix) of the data csv files
+    # bnames : base names
+    bnames = [f.split('.csv')[0] for f in os.listdir(DATA_DIR)]
+    # paths of the experimental data csv files
+    data_Csvs = get_data(DATA_DIR)
+    # metrics directory
+    METRICS_DIR = os.path.join(OUTPUT_DIR, 'conversion_regression')
+    # paths of the metrics from the conversion regression
+    metrics_Csvs = get_data(METRICS_DIR)
+    # filter proper csvs
+    metrics_Csvs = [f for f in metrics_Csvs if 'conversion_regression_accuracy' in f]
+
+    # zip data files and metrics
+    data    = sortOnData(bnames,data_Csvs)
+    metrics = sortOnData(bnames,metrics_Csvs)
+    data_and_metrics = list(zip(data,metrics))
+    
+    # loop over all data
+    for i_csv, csv in enumerate(data_and_metrics):
+
+        # make directory for the graphs
+        DIR       = os.path.join(METRICS_DIR,'png')
+        DIR       = os.path.join(DIR,'rate_fit')
+        GRAPH_DIR = os.path.join(DIR, bnames[i_csv])
+        if not os.path.exists(GRAPH_DIR):
+            os.makedirs(GRAPH_DIR)
+
+        # data dataframe
+        data_df    = pd.read_csv(csv[0])
+        # metrics dataframe
+        metrics_df = pd.read_csv(csv[1])
+        # data
+        conversion, time, temperature = read_filtrated_datafile(data_df,low,high)
+        # read variable units
+        timeUnits, massUnits, tempUnits = read_units(data_df)
+
+        # experimental reaction rate from polynomial conversion
+        dadt_polynomial = data2Polrate(csv[0],low,high,pdeg,npoints)
+        # experimental reaction rate from actual conversion
+        dadt_numerical  = data2Exprate(csv[0],low,high)
+
+        modelNames = metrics_df['model'].tolist()
+        ks         = metrics_df['k_arrhenius'].to_numpy()
+
+        # calculate experimental reaction rate
+        if fitExp:
+            y = dadt_numerical
+        else:
+            y = dadt_polynomial
+
+        x = time
+
+        # loop over models
+        for i_model, modelName in enumerate(modelNames):
+            # pick up a model
+            model = Model(modelName)
+            # choose the corresponding arrhenius rate constant
+            k = ks[i_model]
+
+            if modelName not in ['D2','D4']:
+                # calculate the modeled differential reaction rate
+                tfit = np.linspace(time[0], time[-1], num=npoints)
+                yfit = np.array( [ model.alpha(t, k) for t in tfit ] )
+                dadt_model = np.array( [k*model.f(a) for a in yfit] )
+                yfit = dadt_model
+                xfit = tfit
+                # export a graph for the fitting of the integral reaction rate
+                fig  = plt.figure()
+                if fitExp:
+                    ext = '_experimental_rate_fit.'
+                else:
+                    ext = '_polynomial_rate_fit.'
+                fname = modelName + '_' + bnames[i_csv] + ext + graph_format
+                Plot = os.path.join(GRAPH_DIR,fname)
+                plt.scatter(x, y, s=10, label='experimental')
+                plt.plot(xfit, yfit, lw=lwidth, label=modelName)
+                plt.legend()
+                plt.ylabel(r'reaction rate')
+                plt.xlabel('time [' + timeUnits +']')
                 plt.tight_layout()
                 plt.savefig(Plot, format=graph_format, dpi=graph_dpi)
                 plt.close() # to avoid memory warnings
