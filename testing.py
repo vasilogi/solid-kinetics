@@ -306,7 +306,7 @@ criteria2desicionIndex(DATA,OUTPUT,measure,fitExp)
 # # # data
 # # conversion, time, temperature = read_filtrated_datafile(data_df,low,high)
 # # # read variable units
-# # timeUnits, massUnits, tempUnits = read_units(data_df)
+# # timeUnits, tempUnits = read_units(data_df)
 
 # # modelNames = metrics_df['model'].tolist()
 # # ks     = metrics_df['k_arrhenius'].to_numpy()

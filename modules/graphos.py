@@ -48,7 +48,7 @@ def graph_experimental_data(DATA_DIR,OUTPUT_DIR):
         # read data file
         conversion, time, temperature   = read_filtrated_datafile(df,low,high)
         # read variable units
-        timeUnits, massUnits, tempUnits = read_units(df)
+        timeUnits, tempUnits = read_units(df)
         plt.scatter(time,conversion,s=10,label=str(temperature)+tempUnits)
         # export experimental data
         data = {
@@ -191,7 +191,7 @@ def integralRegressionGraphs(DATA_DIR,OUTPUT_DIR,low,high,npoints):
         # data
         conversion, time, temperature = read_filtrated_datafile(data_df,low,high)
         # read variable units
-        timeUnits, massUnits, tempUnits = read_units(data_df)
+        timeUnits, tempUnits = read_units(data_df)
 
         modelNames = metrics_df['model'].tolist()
         ks     = metrics_df['k_arrhenius'].to_numpy()
@@ -258,7 +258,7 @@ def conversionRegressionGraphs(DATA_DIR,OUTPUT_DIR,low,high,npoints):
         # data
         conversion, time, temperature = read_filtrated_datafile(data_df,low,high)
         # read variable units
-        timeUnits, massUnits, tempUnits = read_units(data_df)
+        timeUnits, tempUnits = read_units(data_df)
 
         modelNames = metrics_df['model'].tolist()
         ks     = metrics_df['k_arrhenius'].to_numpy()
@@ -325,7 +325,7 @@ def differentialRegressionGraphs(DATA_DIR,OUTPUT_DIR,low,high,npoints):
         # data
         conversion, time, temperature = read_filtrated_datafile(data_df,low,high)
         # read variable units
-        timeUnits, massUnits, tempUnits = read_units(data_df)
+        timeUnits, tempUnits = read_units(data_df)
 
         modelNames = metrics_df['model'].tolist()
         ks     = metrics_df['k_arrhenius'].to_numpy()
@@ -395,7 +395,7 @@ def rateFitGraphs(DATA_DIR,OUTPUT_DIR,low,high,pdeg,npoints,fitExp):
         # data
         conversion, time, temperature = read_filtrated_datafile(data_df,low,high)
         # read variable units
-        timeUnits, massUnits, tempUnits = read_units(data_df)
+        timeUnits, tempUnits = read_units(data_df)
 
         # experimental reaction rate from polynomial conversion
         dadt_polynomial = data2Polrate(csv[0],low,high,pdeg,npoints)

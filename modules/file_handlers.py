@@ -44,12 +44,11 @@ def read_filtrated_datafile(df,low,high):
 def read_units(df):
     # df   : dataframe
     timeUnits = df['time units'].to_list()[0]
-    massUnits = df['mass units'].to_list()[0]
     tempUnits = df['temperature units'].to_list()[0]
 
     if tempUnits == 'Kelvin':
         tempUnits = 'K'
     elif tempUnits == 'Celsius':
         tempUnits = 'C'
-        
-    return timeUnits, massUnits, tempUnits
+    
+    return timeUnits, tempUnits

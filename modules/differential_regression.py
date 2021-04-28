@@ -35,7 +35,7 @@ def data2differentialFit(DATA_DIR,OUTPUT_DIR,modelNames,low,high):
         # data
         conversion, time, temperature = read_filtrated_datafile(df,low,high)
         # read variable units
-        timeUnits, massUnits, tempUnits = read_units(df)
+        timeUnits, tempUnits = read_units(df)
         # accuracy criteria
         ss_res      = [] # sum of square residuals (ideal = 0)
         mse         = [] # mean square error (ideal = 0)

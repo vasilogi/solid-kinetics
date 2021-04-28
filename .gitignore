@@ -3,3 +3,4 @@
 *.eps
 *.png
 /[Oo]utput/
+/data/*.csv

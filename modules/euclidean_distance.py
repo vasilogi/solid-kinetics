@@ -76,7 +76,8 @@ def criteria2desicionIndex(DATA_DIR,OUTPUT_DIR,measure,fitExp):
         diffrateReg_err = df2erarray(df,measure,models)
 
         # error data
-        error_data = tuple(zip(convReg_err,rateFit_err,interateReg_err,diffrateReg_err))
+        # error_data = tuple(zip(convReg_err,rateFit_err,interateReg_err,diffrateReg_err))
+        error_data = tuple(zip(convReg_err,rateFit_err,interateReg_err))
 
         # euclidean norm
         a = np.array(error_data[0])
