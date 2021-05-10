@@ -127,8 +127,6 @@ def differentialRateRegression(time,conversion,modelName):
     if modelName not in ['D2','D4']:
         yfit = np.array([model.alpha(t, k) for t in time])  # modeled conversion fraction
     else:
-        # measure the mean square error on the linear integral rate
-        y    = np.array( [model.g(a) for a in conversion] ) # experimental integral rate
         yfit = k*time                                       # modeled integral rate
 
     return k, yfit

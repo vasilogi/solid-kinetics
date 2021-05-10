@@ -47,10 +47,16 @@ def data2differentialFit(DATA_DIR,OUTPUT_DIR,modelNames,low,high):
         for modelName in modelNames:
             # pick up a model
             model = Model(modelName)
-            # experimental integral reaction rate
-            y = np.array([model.g(c) for c in conversion])
-            # perform regression
-            k, yfit = differentialRateRegression(time,conversion, modelName)
+            if modelName not in ['D2','D4']:
+                # experimental conversion
+                y = conversion
+                # perform regression
+                k, yfit = differentialRateRegression(time,conversion, modelName)
+            else:
+                 # experimental integral reaction rate
+                y = np.array([model.g(c) for c in conversion])
+                # perform regression
+                k, yfit = differentialRateRegression(time,conversion, modelName)
             # calculate validation errors
             ss_res.append(ssRes(y,yfit))
             mse.append(MSE(y,yfit))

@@ -15,7 +15,7 @@ high = 0.95
 pdeg = 9
 npoints = 1000
 # export csv with the desicions
-measure = 'resREr' # choose measure
+measure = 'resREr' # choose measureS
 fitExp = False
 ```
 
@@ -41,4 +41,13 @@ data2conversionFit(DATA,OUTPUT,modelNames,low,high)
 ```
 
 it fits the model conversion to the experimental conversion and export the relative metrics data and Arrhenius constant for all data sets. It saves separate csv files with the suffix *_conversion_regression_accuracy.csv*
+
+if the model is D2 or D4 the metrics from the integral conversion are used
+
+```python
+# perform non-linear regression on the differential rate experimental data
+data2differentialFit(DATA,OUTPUT,modelNames,low,high)
+```
+
+
 
