@@ -49,5 +49,22 @@ if the model is D2 or D4 the metrics from the integral conversion are used
 data2differentialFit(DATA,OUTPUT,modelNames,low,high)
 ```
 
+it fits the experimental conversion fraction with the solution of the ODE regarding the differential reaction rate. It saves separate files with all the metrics using the *suffix _differential_regression_accuracy.csv*
 
+if the model is D2 or D4 the metrics from the integral conversion are used
 
+```python
+# export reaction rate data
+export_experimental_reaction(DATA,OUTPUT,pdeg,npoints)
+```
+
+it calculates the experimental reaction rates for all data sets in two ways: i. by differentiating the original experimental conversion over time, ii. by fitting the original conversion with a polynomial and then differentiate the polynomial. It saves separate csv files with the suffix *_reaction_rate.csv*
+
+```python
+# calculate accuracy metrics for the actual reaction experimental rate fit
+ratedata2Fit(DATA,OUTPUT,modelNames,low,high,pdeg,npoints,True)
+```
+
+it takes the Arrhenius constant by fitting the experimental conversion with models conversion and then calculates the modeled reaction rate as k*f(a). Then, we calculate the metrics of the fitting of the experimental reaction rate with the modeled. If the model is D2, D4 the Arrhenius constant from the fitting of the integral reaction rate is used.
+
+It saves separate files with the suffix *_experimental_rate_fit_accuracy.csv* if the experimental conversion is directly being differentiated or *_polynomial_rate_fit_accuracy.csv* if the polynomial of the experimental conversion is differentiated.

@@ -130,26 +130,25 @@ def ratedata2Fit(DATA_DIR,OUTPUT_DIR,modelNames,low,high,pdeg,npoints,fitExp):
                 # calculate the modeled differential reaction rate
                 dadt_model = np.array( [k*model.f(a) for a in yfit] )
                 yfit = dadt_model
-                if fitExp:
-                    y = dadt_numerical
-                else:
-                    y = dadt_polynomial
-                # calculate validation errors
-                ss_res.append(ssRes(y,yfit))
-                mse.append(MSE(y,yfit))
-                res_AEr.append(resAEr(y,yfit))
-                res_REr.append(resREr(y,yfit))
-                k_arrhenius.append(k)
             else:
                 # experimental integral reaction rate
                 y = np.array([model.g(c) for c in conversion])
                 # perform regression
                 k, yfit = integralRateRegression(time,conversion, modelName)
-                ss_res.append(ssRes(y,yfit))
-                mse.append(MSE(y,yfit))
-                res_AEr.append(resAEr(y,yfit))
-                res_REr.append(resREr(y,yfit))
-                k_arrhenius.append(k)
+                # calculate the modeled differential reaction rate
+                dadt_model = np.array( [k*model.f(a) for a in conversion] )
+                yfit = dadt_model
+            
+            if fitExp:
+                y = dadt_numerical
+            else:
+                y = dadt_polynomial
+            # calculate validation errors
+            ss_res.append(ssRes(y,yfit))
+            mse.append(MSE(y,yfit))
+            res_AEr.append(resAEr(y,yfit))
+            res_REr.append(resREr(y,yfit))
+            k_arrhenius.append(k)
         
         # export regression accuracy data
         error_data = {
