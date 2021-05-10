@@ -68,3 +68,19 @@ ratedata2Fit(DATA,OUTPUT,modelNames,low,high,pdeg,npoints,True)
 it takes the Arrhenius constant by fitting the experimental conversion with models conversion and then calculates the modeled reaction rate as k*f(a). Then, we calculate the metrics of the fitting of the experimental reaction rate with the modeled. If the model is D2, D4 the Arrhenius constant from the fitting of the integral reaction rate is used.
 
 It saves separate files with the suffix *_experimental_rate_fit_accuracy.csv* if the experimental conversion is directly being differentiated or *_polynomial_rate_fit_accuracy.csv* if the polynomial of the experimental conversion is differentiated.
+
+```python
+# heatmap metrics
+measures2heatmaps(OUTPUT)
+```
+
+it exports heatmaps for all the metrics, integral, conversion, differential and reaction rate fittings.
+
+```python
+# export csv with the desicions
+measure = 'resREr' # choose measure
+fitExp = False
+criteria2desicionIndex(DATA,OUTPUT,measure,fitExp)
+```
+
+choose the measure, calculate the Euclidean distance for the chosen measure from the conversion, integral reaction and reaction rate fit.
