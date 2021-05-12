@@ -5,13 +5,14 @@ import os
 # import pandas as pd
 
 # Local application imports
-from modules.graphos import graph_experimental_data, measures2heatmaps, integralRegressionGraphs, conversionRegressionGraphs, differentialRegressionGraphs, rateFitGraphs, export_kinetic_triplet
+from modules.graphos import graph_experimental_data, measures2heatmaps, integralRegressionGraphs, conversionRegressionGraphs, differentialRegressionGraphs, rateFitGraphs, export_kinetic_triplet, graph_isoconversional_enthalpy
 from modules.file_handlers import get_data
 from modules.integral_regression import data2integralFit
 from modules.conversion_regression import data2conversionFit, ratedata2Fit
 from modules.differential_regression import  data2differentialFit
 from modules.reaction_rate_numerics import export_experimental_reaction
 from modules.euclidean_distance import criteria2desicionIndex
+from modules.isoconversional_methods import integral_isoconversional
 
 # models names supported in this software
 modelNames = ["A2","A3","A4","D1","D2","D3","D4","F0","F1","F2","F3","P2","P3","P4","R2","R3"]
@@ -32,48 +33,52 @@ npoints = 1000
 # get data files
 Csvs = get_data(DATA)
 
-# plot and export solely the experimental data
-graph_experimental_data(DATA,OUTPUT)
+# # plot and export solely the experimental data
+# graph_experimental_data(DATA,OUTPUT)
 
-# perform linear regression on the integral rate experimental data
-data2integralFit(DATA,OUTPUT,modelNames,low,high)
+# # perform linear regression on the integral rate experimental data
+# data2integralFit(DATA,OUTPUT,modelNames,low,high)
 
-# perform non-linear regression on the exact conversion
-data2conversionFit(DATA,OUTPUT,modelNames,low,high)
+# # perform non-linear regression on the exact conversion
+# data2conversionFit(DATA,OUTPUT,modelNames,low,high)
 
-# perform non-linear regression on the differential rate experimental data
-data2differentialFit(DATA,OUTPUT,modelNames,low,high)
+# # perform non-linear regression on the differential rate experimental data
+# data2differentialFit(DATA,OUTPUT,modelNames,low,high)
 
-# export reaction rate data
-export_experimental_reaction(DATA,OUTPUT,pdeg,npoints)
+# # export reaction rate data
+# export_experimental_reaction(DATA,OUTPUT,pdeg,npoints)
 
-# calculate accuracy metrics for the actual reaction experimental rate fit
-ratedata2Fit(DATA,OUTPUT,modelNames,low,high,pdeg,npoints,True)
+# # calculate accuracy metrics for the actual reaction experimental rate fit
+# ratedata2Fit(DATA,OUTPUT,modelNames,low,high,pdeg,npoints,True)
 
-# calculate accuracy metrics for the actual reaction polynomial rate fit
-ratedata2Fit(DATA,OUTPUT,modelNames,low,high,pdeg,npoints,False)
+# # calculate accuracy metrics for the actual reaction polynomial rate fit
+# ratedata2Fit(DATA,OUTPUT,modelNames,low,high,pdeg,npoints,False)
 
-# heatmap metrics
-measures2heatmaps(OUTPUT)
+# # heatmap metrics
+# measures2heatmaps(OUTPUT)
 
-# graph all fittings of the integral reaction rate
-integralRegressionGraphs(DATA,OUTPUT,low,high,npoints)
+# # graph all fittings of the integral reaction rate
+# integralRegressionGraphs(DATA,OUTPUT,low,high,npoints)
 
-# graph all fittings of the conversion
-conversionRegressionGraphs(DATA,OUTPUT,low,high,npoints)
+# # graph all fittings of the conversion
+# conversionRegressionGraphs(DATA,OUTPUT,low,high,npoints)
 
-# graph all fittings of the conversion from the differential rate fitting
-differentialRegressionGraphs(DATA,OUTPUT,low,high,npoints)
+# # graph all fittings of the conversion from the differential rate fitting
+# differentialRegressionGraphs(DATA,OUTPUT,low,high,npoints)
 
-# graph all fittings of the actual reaction experimental rate
-rateFitGraphs(DATA,OUTPUT,low,high,pdeg,npoints,True)
+# # graph all fittings of the actual reaction experimental rate
+# rateFitGraphs(DATA,OUTPUT,low,high,pdeg,npoints,True)
 
-# graph all fittings of the actual reaction polynomial rate
-rateFitGraphs(DATA,OUTPUT,low,high,pdeg,npoints,False)
+# # graph all fittings of the actual reaction polynomial rate
+# rateFitGraphs(DATA,OUTPUT,low,high,pdeg,npoints,False)
 
-# export csv with the desicions
-measure = 'resREr' # choose measure
-fitExp = False
-criteria2desicionIndex(DATA,OUTPUT,measure,fitExp)
+# # export csv with the desicions
+# measure = 'resREr' # choose measure
+# fitExp = False
+# criteria2desicionIndex(DATA,OUTPUT,measure,fitExp)
 
-export_kinetic_triplet(OUTPUT)
+# export_kinetic_triplet(OUTPUT)
+
+integral_isoconversional(DATA,OUTPUT,low,high)
+
+graph_isoconversional_enthalpy(OUTPUT)
