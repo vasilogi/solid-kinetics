@@ -483,3 +483,21 @@ def export_kinetic_triplet(OUTPUT_DIR):
     plt.tight_layout()
     plt.savefig(Plot, format=graph_format, dpi=graph_dpi)
     plt.close() # to avoid memory warnings
+
+def graph_isoconversional_enthalpy(OUTPUT_DIR):
+    WDIR = os.path.join(OUTPUT_DIR,'isoconversional')
+    df = pd.read_csv(os.path.join(WDIR,'isoconversional_energy.csv'))
+    fig  = plt.figure()
+    fname = 'isoconversional_enthalpy.' + graph_format
+
+    Plot = os.path.join(WDIR,fname)
+
+    fig = plt.figure()
+    plt.scatter(df['conversion'], df['activation_enthalpy'], s=50)
+    plt.ylabel('activation enthalpy [kJ/mol]')
+    plt.xlabel('conversion')
+    plt.xlim(0.0,1.0)
+    plt.tight_layout()
+    plt.savefig(Plot, format=graph_format, dpi=graph_dpi)
+    plt.close() # to avoid memory warnings
+    
