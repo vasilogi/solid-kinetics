@@ -57,7 +57,8 @@ def graph_experimental_data(DATA_DIR,OUTPUT_DIR):
         data = {
             'time'        : time,
             'conversion'  : conversion,
-            'temperature' : temperature
+            'temperature' : temperature,
+            'temperature_units': tempUnits
         }
         df = pd.DataFrame(data)
         csv_name = fnames[indx] + '_experimental_conversion.csv'
