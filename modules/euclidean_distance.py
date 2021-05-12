@@ -98,3 +98,36 @@ def criteria2desicionIndex(DATA_DIR,OUTPUT_DIR,measure,fitExp):
         # export csv
         Expname = os.path.join( ODIR, bn + '_' + measure + '_desicion.csv' )
         des_df.to_csv(Expname,index=False)
+
+def get_best_model(OUTPUT_DIR):
+
+    def best_model(csv_list):
+        # allocate the best model list
+        bm_list = []
+        for csv in csv_list:
+            # csv is the full path of the csv file
+            # get it in dataframe
+            df = pd.read_csv(csv)
+            # get a series object
+            # containing the model with the minimum value
+            min_row = df.min()
+            bm_list.append(min_row['model'])
+        return bm_list
+
+    def model_frequency(strings_list):
+        freqs = {}
+        string = strings_list[0]
+        freqs[string] = strings_list.count(string)
+        for string in strings_list:
+            if string not in freqs.keys():
+                freqs[string] = strings_list.count(string)
+        return freqs
+
+    WDIR = os.path.join(OUTPUT_DIR,'desicion')
+    Csvs = [os.path.join(WDIR,i) for i in os.listdir(WDIR)]
+
+    best_models = best_model(Csvs)
+    frequencies = model_frequency(best_models)
+    best_model = max(frequencies, key=frequencies.get)
+
+    return best_model
