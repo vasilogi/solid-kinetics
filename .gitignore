@@ -4,3 +4,4 @@
 *.png
 /[Oo]utput/
 /data/*.csv
+*.ipynb

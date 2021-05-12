@@ -5,7 +5,7 @@ import os
 # import pandas as pd
 
 # Local application imports
-from modules.graphos import graph_experimental_data, measures2heatmaps, integralRegressionGraphs, conversionRegressionGraphs, differentialRegressionGraphs, rateFitGraphs
+from modules.graphos import graph_experimental_data, measures2heatmaps, integralRegressionGraphs, conversionRegressionGraphs, differentialRegressionGraphs, rateFitGraphs, export_kinetic_triplet
 from modules.file_handlers import get_data
 from modules.integral_regression import data2integralFit
 from modules.conversion_regression import data2conversionFit, ratedata2Fit
@@ -75,3 +75,5 @@ rateFitGraphs(DATA,OUTPUT,low,high,pdeg,npoints,False)
 measure = 'resREr' # choose measure
 fitExp = False
 criteria2desicionIndex(DATA,OUTPUT,measure,fitExp)
+
+export_kinetic_triplet(OUTPUT)
