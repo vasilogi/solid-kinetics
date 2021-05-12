@@ -14,6 +14,9 @@ from modules.arrhenius import mass2conv
 from modules.file_handlers import read_filtrated_datafile, read_units, get_data
 from modules.reaction_models import Model
 from modules.reaction_rate_numerics import data2Polrate, data2Exprate
+from modules.euclidean_distance import get_best_model
+from modules.regressors import activation_enthalpy
+from modules.arrhenius import csv2Arrhenius, rateConstant
 
 # basic plot settings
 graph_format = 'png'
@@ -100,6 +103,7 @@ def df2heatmap(WDIR,df,fname):
     criteria = df.columns.to_list()
     criteria.remove('model')
     criteria.remove('temperature')
+    criteria.remove('temperature_units')
     if 'k_arrhenius' in criteria:
         criteria.remove('k_arrhenius')
     
@@ -443,3 +447,38 @@ def rateFitGraphs(DATA_DIR,OUTPUT_DIR,low,high,pdeg,npoints,fitExp):
                 plt.tight_layout()
                 plt.savefig(Plot, format=graph_format, dpi=graph_dpi)
                 plt.close() # to avoid memory warnings
+
+def export_kinetic_triplet(OUTPUT_DIR):
+    GRAPH_DIR = os.path.join(OUTPUT_DIR, 'desicion')
+    if not os.path.exists(GRAPH_DIR):
+        os.makedirs(GRAPH_DIR)
+    
+    best_model = get_best_model(OUTPUT_DIR)
+
+    WDIR = os.path.join(OUTPUT_DIR,'conversion_regression')
+
+    Csvs = [os.path.join(WDIR,i) for i in os.listdir(WDIR) if 'conversion_regression_accuracy.csv' in i]
+
+    k, T = csv2Arrhenius(Csvs,best_model)
+
+    fit_data = activation_enthalpy(k,T)
+
+    df = pd.DataFrame.from_dict(fit_data,orient='index')
+    df.to_csv(os.path.join(GRAPH_DIR,'kinetic_triplet.csv'))
+
+    x_fit = np.linspace(round(min(T)-10),round(max(T)+10),500)
+    k_fit = np.array( [ rateConstant(fit_data['frequency_factor'],fit_data['activation_enthalpy'],T) for T in x_fit ] )
+
+    fig  = plt.figure()
+    fname = 'best_model_prediction.' + graph_format
+
+    Plot = os.path.join(GRAPH_DIR,fname)
+    plt.scatter(T, k, s=50, label='experimental')
+    plt.plot(x_fit, k_fit, lw=lwidth, label='prediction')
+    plt.legend()
+    plt.xlim(min(x_fit),max(x_fit))
+    plt.ylabel('Arrhenius rate constant')
+    plt.xlabel('temperature (K)')
+    plt.tight_layout()
+    plt.savefig(Plot, format=graph_format, dpi=graph_dpi)
+    plt.close() # to avoid memory warnings

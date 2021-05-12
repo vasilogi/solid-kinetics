@@ -182,22 +182,13 @@ def comprehensiveRegressor(time,conversion,models):
 
     return df
 
-
-def arrheniusEnthalpy(rate_constant,temperature):
-    # arguments 
-    # rate_constant (numpy array)
-    # temperature (numpy array)
-
-    # returns
-    # the activation enthalpy (Ea) in a list like [activation enthalpy, mean square error]
-    # and the frequency factor (A)
-    # and the prediction
+def activation_enthalpy(k,T):
 
     # gas constant 
     R = 8.31446261815324 # J K-1 mol-1
 
-    x = 1.0/temperature
-    y = np.log(rate_constant)
+    x = 1.0/T
+    y = np.log(k)
 
     x = x.reshape((-1, 1))
 
@@ -206,12 +197,11 @@ def arrheniusEnthalpy(rate_constant,temperature):
     regr.fit(x, y)
     y_pred = regr.predict(x)
 
-    Ea  = -regr.coef_[0]*R # in J mol-1
-    A   = np.exp(regr.intercept_)
-    MSE = mean_squared_error(y, y_pred)
-    R2   = r2_score(y_pred , y)
+    Ea = - regr.coef_[0]*R # in J mol-1
+    A = np.exp(regr.intercept_)
+    R2 = r2_score(y_pred , y)
 
-    return [Ea,MSE], A
+    return {'activation_enthalpy': Ea, 'frequency_factor': A, 'R2_score': R2}
 
 def isocEnthalpy(time,temperature):
     # arguments 

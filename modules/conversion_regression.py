@@ -33,7 +33,7 @@ def data2conversionFit(DATA_DIR,OUTPUT_DIR,modelNames,low,high):
         # get dataframe
         df = pd.read_csv(Csv)
         # data
-        conversion, time, temperature = read_filtrated_datafile(df,low,high)
+        conversion, time, temperature = read_filtrated_datafile(df,low,high)        
         # read variable units
         timeUnits, tempUnits = read_units(df)
         # accuracy criteria
@@ -77,7 +77,8 @@ def data2conversionFit(DATA_DIR,OUTPUT_DIR,modelNames,low,high):
             'resAEr'      : res_AEr,
             'resREr'      : res_REr,
             'k_arrhenius' : k_arrhenius,
-            'temperature' : temperature
+            'temperature' : temperature,
+            'temperature_units': tempUnits
         }
         df = pd.DataFrame(error_data)
         prefix = fnames[indx].split('.csv')[0]
@@ -106,6 +107,8 @@ def ratedata2Fit(DATA_DIR,OUTPUT_DIR,modelNames,low,high,pdeg,npoints,fitExp):
 
         # get experimental conversion
         conversion, time, temperature = read_filtrated_datafile(df,low,high)
+        # read variable units
+        timeUnits, tempUnits = read_units(df)
         # experimental reaction rate from polynomial conversion
         dadt_polynomial = data2Polrate(Csv,low,high,pdeg,npoints)
         # experimental reaction rate from actual conversion
@@ -157,7 +160,8 @@ def ratedata2Fit(DATA_DIR,OUTPUT_DIR,modelNames,low,high,pdeg,npoints,fitExp):
             'mse'         : mse,
             'resAEr'      : res_AEr,
             'resREr'      : res_REr,
-            'temperature' : temperature
+            'temperature' : temperature,
+            'temperature_units': tempUnits
         }
         df = pd.DataFrame(error_data)
         prefix = fnames[indx].split('.csv')[0]

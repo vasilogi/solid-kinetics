@@ -72,7 +72,8 @@ def data2differentialFit(DATA_DIR,OUTPUT_DIR,modelNames,low,high):
             'resAEr'      : res_AEr,
             'resREr'      : res_REr,
             'k_arrhenius' : k_arrhenius,
-            'temperature' : temperature
+            'temperature' : temperature,
+            'temperature_units': tempUnits
         }
         df = pd.DataFrame(error_data)
         prefix = fnames[indx].split('.csv')[0]
