@@ -464,6 +464,8 @@ def export_kinetic_triplet(OUTPUT_DIR):
 
     fit_data = activation_enthalpy(k,T)
 
+    fit_data['best_model'] = best_model
+
     df = pd.DataFrame.from_dict(fit_data,orient='index')
     df.to_csv(os.path.join(GRAPH_DIR,'kinetic_triplet.csv'))
 

@@ -108,10 +108,7 @@ def get_best_model(OUTPUT_DIR):
             # csv is the full path of the csv file
             # get it in dataframe
             df = pd.read_csv(csv)
-            # get a series object
-            # containing the model with the minimum value
-            min_row = df.min()
-            bm_list.append(min_row['model'])
+            bm_list.append(df.iloc[0]['model'])
         return bm_list
 
     def model_frequency(strings_list):
